@@ -18,6 +18,21 @@ import (
 	"github.com/mark3labs/mcp-go/server"
 )
 
+// AppendAIGeneratedMarker adds an AI-generated trailer to the commit message.
+// This follows Git trailer conventions (like Signed-off-by, Co-authored-by).
+func AppendAIGeneratedMarker(message string) string {
+	// Ensure message doesn't have trailing newlines before adding the marker
+	message = strings.TrimRight(message, "\n")
+
+	// Add a blank line before the trailer if the message doesn't already end with one
+	if message != "" && !strings.HasSuffix(message, "\n\n") {
+		message += "\n"
+	}
+
+	// Append the AI-generated trailer
+	return message + "\nAI-generated-by: GitHub MCP Server"
+}
+
 func GetCommit(getClient GetClientFn, t translations.TranslationHelperFunc) (tool mcp.Tool, handler server.ToolHandlerFunc) {
 	return mcp.NewTool("get_commit",
 			mcp.WithDescription(t("TOOL_GET_COMMITS_DESCRIPTION", "Get details for a commit from a GitHub repository")),
@@ -342,9 +357,12 @@ func CreateOrUpdateFile(getClient GetClientFn, t translations.TranslationHelperF
 			// json.Marshal encodes byte arrays with base64, which is required for the API.
 			contentBytes := []byte(content)
 
+			// Append AI-generated marker to the commit message
+			messageWithMarker := AppendAIGeneratedMarker(message)
+
 			// Create the file options
 			opts := &github.RepositoryContentFileOptions{
-				Message: github.Ptr(message),
+				Message: github.Ptr(messageWithMarker),
 				Content: contentBytes,
 				Branch:  github.Ptr(branch),
 			}
@@ -824,6 +842,9 @@ func DeleteFile(getClient GetClientFn, t translations.TranslationHelperFunc) (to
 				return mcp.NewToolResultError(err.Error()), nil
 			}
 
+			// Append AI-generated marker to the commit message
+			messageWithMarker := AppendAIGeneratedMarker(message)
+
 			client, err := getClient(ctx)
 			if err != nil {
 				return nil, fmt.Errorf("failed to get GitHub client: %w", err)
@@ -886,7 +907,7 @@ func DeleteFile(getClient GetClientFn, t translations.TranslationHelperFunc) (to
 
 			// Create a new commit with the new tree
 			commit := github.Commit{
-				Message: github.Ptr(message),
+				Message: github.Ptr(messageWithMarker),
 				Tree:    newTree,
 				Parents: []*github.Commit{{SHA: baseCommit.SHA}},
 			}
@@ -1116,6 +1137,9 @@ func PushFiles(getClient GetClientFn, t translations.TranslationHelperFunc) (too
 				return mcp.NewToolResultError("files parameter must be an array of objects with path and content"), nil
 			}
 
+			// Append AI-generated marker to the commit message
+			messageWithMarker := AppendAIGeneratedMarker(message)
+
 			client, err := getClient(ctx)
 			if err != nil {
 				return nil, fmt.Errorf("failed to get GitHub client: %w", err)
@@ -1184,7 +1208,7 @@ func PushFiles(getClient GetClientFn, t translations.TranslationHelperFunc) (too
 
 			// Create a new commit
 			commit := github.Commit{
-				Message: github.Ptr(message),
+				Message: github.Ptr(messageWithMarker),
 				Tree:    newTree,
 				Parents: []*github.Commit{{SHA: baseCommit.SHA}},
 			}
