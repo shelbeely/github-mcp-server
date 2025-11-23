@@ -18,8 +18,12 @@ import (
 	"github.com/mark3labs/mcp-go/server"
 )
 
-// AppendAIGeneratedMarker adds an AI-generated trailer to the commit message.
+// AppendAIGeneratedMarker adds AI-generated trailers to the commit message.
 // This follows Git trailer conventions (like Signed-off-by, Co-authored-by).
+// The trailers include:
+// - AI-Assist: yes (indicates AI assistance was used)
+// - AI-Model: GitHub MCP Server (identifies the model/system used)
+// - Reviewed-By: none (indicates auto-commit without human review)
 func AppendAIGeneratedMarker(message string) string {
 	// Ensure message doesn't have trailing newlines before adding the marker
 	message = strings.TrimRight(message, "\n")
@@ -29,8 +33,8 @@ func AppendAIGeneratedMarker(message string) string {
 		message += "\n"
 	}
 
-	// Append the AI-generated trailer
-	return message + "\nAI-generated-by: GitHub MCP Server"
+	// Append the AI-generated trailers
+	return message + "\nAI-Assist: yes\nAI-Model: GitHub MCP Server\nReviewed-By: none"
 }
 
 func GetCommit(getClient GetClientFn, t translations.TranslationHelperFunc) (tool mcp.Tool, handler server.ToolHandlerFunc) {

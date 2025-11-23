@@ -1036,7 +1036,7 @@ func Test_CreateOrUpdateFile(t *testing.T) {
 				mock.WithRequestMatchHandler(
 					mock.PutReposContentsByOwnerByRepoByPath,
 					expectRequestBody(t, map[string]interface{}{
-						"message": "Add example file\n\nAI-generated-by: GitHub MCP Server",
+						"message": "Add example file\n\nAI-Assist: yes\nAI-Model: GitHub MCP Server\nReviewed-By: none",
 						"content": "IyBFeGFtcGxlCgpUaGlzIGlzIGFuIGV4YW1wbGUgZmlsZS4=", // Base64 encoded content
 						"branch":  "main",
 					}).andThen(
@@ -1061,7 +1061,7 @@ func Test_CreateOrUpdateFile(t *testing.T) {
 				mock.WithRequestMatchHandler(
 					mock.PutReposContentsByOwnerByRepoByPath,
 					expectRequestBody(t, map[string]interface{}{
-						"message": "Update example file\n\nAI-generated-by: GitHub MCP Server",
+						"message": "Update example file\n\nAI-Assist: yes\nAI-Model: GitHub MCP Server\nReviewed-By: none",
 						"content": "IyBVcGRhdGVkIEV4YW1wbGUKClRoaXMgZmlsZSBoYXMgYmVlbiB1cGRhdGVkLg==", // Base64 encoded content
 						"branch":  "main",
 						"sha":     "abc123def456",
@@ -1422,7 +1422,7 @@ func Test_PushFiles(t *testing.T) {
 				mock.WithRequestMatchHandler(
 					mock.PostReposGitCommitsByOwnerByRepo,
 					expectRequestBody(t, map[string]interface{}{
-						"message": "Update multiple files\n\nAI-generated-by: GitHub MCP Server",
+						"message": "Update multiple files\n\nAI-Assist: yes\nAI-Model: GitHub MCP Server\nReviewed-By: none",
 						"tree":    "ghi789",
 						"parents": []interface{}{"abc123"},
 					}).andThen(
@@ -1859,7 +1859,7 @@ func Test_DeleteFile(t *testing.T) {
 				mock.WithRequestMatchHandler(
 					mock.PostReposGitCommitsByOwnerByRepo,
 					expectRequestBody(t, map[string]interface{}{
-						"message": "Delete example file\n\nAI-generated-by: GitHub MCP Server",
+						"message": "Delete example file\n\nAI-Assist: yes\nAI-Model: GitHub MCP Server\nReviewed-By: none",
 						"tree":    "ghi789",
 						"parents": []interface{}{"abc123"},
 					}).andThen(
@@ -3422,32 +3422,32 @@ func Test_AppendAIGeneratedMarker(t *testing.T) {
 		{
 			name:     "simple message",
 			message:  "Add new feature",
-			expected: "Add new feature\n\nAI-generated-by: GitHub MCP Server",
+			expected: "Add new feature\n\nAI-Assist: yes\nAI-Model: GitHub MCP Server\nReviewed-By: none",
 		},
 		{
 			name:     "message with trailing newline",
 			message:  "Fix bug\n",
-			expected: "Fix bug\n\nAI-generated-by: GitHub MCP Server",
+			expected: "Fix bug\n\nAI-Assist: yes\nAI-Model: GitHub MCP Server\nReviewed-By: none",
 		},
 		{
 			name:     "message with multiple trailing newlines",
 			message:  "Update docs\n\n",
-			expected: "Update docs\n\nAI-generated-by: GitHub MCP Server",
+			expected: "Update docs\n\nAI-Assist: yes\nAI-Model: GitHub MCP Server\nReviewed-By: none",
 		},
 		{
 			name:     "empty message",
 			message:  "",
-			expected: "\nAI-generated-by: GitHub MCP Server",
+			expected: "\nAI-Assist: yes\nAI-Model: GitHub MCP Server\nReviewed-By: none",
 		},
 		{
 			name:     "multiline message",
 			message:  "Add feature\n\nThis adds a new feature with multiple paragraphs.",
-			expected: "Add feature\n\nThis adds a new feature with multiple paragraphs.\n\nAI-generated-by: GitHub MCP Server",
+			expected: "Add feature\n\nThis adds a new feature with multiple paragraphs.\n\nAI-Assist: yes\nAI-Model: GitHub MCP Server\nReviewed-By: none",
 		},
 		{
 			name:     "message already ending with double newline",
 			message:  "Fix issue\n\n",
-			expected: "Fix issue\n\nAI-generated-by: GitHub MCP Server",
+			expected: "Fix issue\n\nAI-Assist: yes\nAI-Model: GitHub MCP Server\nReviewed-By: none",
 		},
 	}
 
