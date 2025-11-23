@@ -6,6 +6,10 @@
   "description": "Push multiple files to a GitHub repository in a single commit",
   "inputSchema": {
     "properties": {
+      "ai_model": {
+        "description": "Optional: AI model name to include in commit metadata (e.g., 'gpt-4', 'claude-3'). Defaults to 'GitHub MCP Server' if not provided.",
+        "type": "string"
+      },
       "branch": {
         "description": "Branch to push to",
         "type": "string"

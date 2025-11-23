@@ -3415,45 +3415,58 @@ func Test_GetRepositoryTree(t *testing.T) {
 
 func Test_AppendAIGeneratedMarker(t *testing.T) {
 	tests := []struct {
-		name     string
-		message  string
-		expected string
+		name      string
+		message   string
+		modelName string
+		expected  string
 	}{
 		{
-			name:     "simple message",
-			message:  "Add new feature",
-			expected: "Add new feature\n\nAI-Assist: yes\nAI-Model: GitHub MCP Server\nReviewed-By: none",
+			name:      "simple message with default model",
+			message:   "Add new feature",
+			modelName: "",
+			expected:  "Add new feature\n\nAI-Assist: yes\nAI-Model: GitHub MCP Server\nReviewed-By: none",
 		},
 		{
-			name:     "message with trailing newline",
-			message:  "Fix bug\n",
-			expected: "Fix bug\n\nAI-Assist: yes\nAI-Model: GitHub MCP Server\nReviewed-By: none",
+			name:      "simple message with custom model",
+			message:   "Add new feature",
+			modelName: "gpt-4",
+			expected:  "Add new feature\n\nAI-Assist: yes\nAI-Model: gpt-4\nReviewed-By: none",
 		},
 		{
-			name:     "message with multiple trailing newlines",
-			message:  "Update docs\n\n",
-			expected: "Update docs\n\nAI-Assist: yes\nAI-Model: GitHub MCP Server\nReviewed-By: none",
+			name:      "message with trailing newline and custom model",
+			message:   "Fix bug\n",
+			modelName: "claude-3-opus",
+			expected:  "Fix bug\n\nAI-Assist: yes\nAI-Model: claude-3-opus\nReviewed-By: none",
 		},
 		{
-			name:     "empty message",
-			message:  "",
-			expected: "\nAI-Assist: yes\nAI-Model: GitHub MCP Server\nReviewed-By: none",
+			name:      "message with multiple trailing newlines",
+			message:   "Update docs\n\n",
+			modelName: "",
+			expected:  "Update docs\n\nAI-Assist: yes\nAI-Model: GitHub MCP Server\nReviewed-By: none",
 		},
 		{
-			name:     "multiline message",
-			message:  "Add feature\n\nThis adds a new feature with multiple paragraphs.",
-			expected: "Add feature\n\nThis adds a new feature with multiple paragraphs.\n\nAI-Assist: yes\nAI-Model: GitHub MCP Server\nReviewed-By: none",
+			name:      "empty message",
+			message:   "",
+			modelName: "",
+			expected:  "\nAI-Assist: yes\nAI-Model: GitHub MCP Server\nReviewed-By: none",
 		},
 		{
-			name:     "message already ending with double newline",
-			message:  "Fix issue\n\n",
-			expected: "Fix issue\n\nAI-Assist: yes\nAI-Model: GitHub MCP Server\nReviewed-By: none",
+			name:      "multiline message with custom model",
+			message:   "Add feature\n\nThis adds a new feature with multiple paragraphs.",
+			modelName: "qwen3-72b-instruct",
+			expected:  "Add feature\n\nThis adds a new feature with multiple paragraphs.\n\nAI-Assist: yes\nAI-Model: qwen3-72b-instruct\nReviewed-By: none",
+		},
+		{
+			name:      "message already ending with double newline",
+			message:   "Fix issue\n\n",
+			modelName: "",
+			expected:  "Fix issue\n\nAI-Assist: yes\nAI-Model: GitHub MCP Server\nReviewed-By: none",
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result := AppendAIGeneratedMarker(tt.message)
+			result := AppendAIGeneratedMarker(tt.message, tt.modelName)
 			assert.Equal(t, tt.expected, result)
 		})
 	}

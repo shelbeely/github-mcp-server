@@ -7,6 +7,10 @@
   "description": "Delete a file from a GitHub repository",
   "inputSchema": {
     "properties": {
+      "ai_model": {
+        "description": "Optional: AI model name to include in commit metadata (e.g., 'gpt-4', 'claude-3'). Defaults to 'GitHub MCP Server' if not provided.",
+        "type": "string"
+      },
       "branch": {
         "description": "Branch to delete the file from",
         "type": "string"

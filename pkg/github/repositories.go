@@ -22,9 +22,10 @@ import (
 // This follows Git trailer conventions (like Signed-off-by, Co-authored-by).
 // The trailers include:
 // - AI-Assist: yes (indicates AI assistance was used)
-// - AI-Model: GitHub MCP Server (identifies the model/system used)
+// - AI-Model: <model_name> (identifies the model/system used)
 // - Reviewed-By: none (indicates auto-commit without human review)
-func AppendAIGeneratedMarker(message string) string {
+// If modelName is empty, defaults to "GitHub MCP Server".
+func AppendAIGeneratedMarker(message string, modelName string) string {
 	// Ensure message doesn't have trailing newlines before adding the marker
 	message = strings.TrimRight(message, "\n")
 
@@ -33,8 +34,13 @@ func AppendAIGeneratedMarker(message string) string {
 		message += "\n"
 	}
 
+	// Default to "GitHub MCP Server" if no model name provided
+	if modelName == "" {
+		modelName = "GitHub MCP Server"
+	}
+
 	// Append the AI-generated trailers
-	return message + "\nAI-Assist: yes\nAI-Model: GitHub MCP Server\nReviewed-By: none"
+	return message + "\nAI-Assist: yes\nAI-Model: " + modelName + "\nReviewed-By: none"
 }
 
 func GetCommit(getClient GetClientFn, t translations.TranslationHelperFunc) (tool mcp.Tool, handler server.ToolHandlerFunc) {
@@ -331,6 +337,9 @@ func CreateOrUpdateFile(getClient GetClientFn, t translations.TranslationHelperF
 			mcp.WithString("sha",
 				mcp.Description("Required if updating an existing file. The blob SHA of the file being replaced."),
 			),
+			mcp.WithString("ai_model",
+				mcp.Description("Optional: AI model name to include in commit metadata (e.g., 'gpt-4', 'claude-3'). Defaults to 'GitHub MCP Server' if not provided."),
+			),
 		),
 		func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 			owner, err := RequiredParam[string](request, "owner")
@@ -358,11 +367,17 @@ func CreateOrUpdateFile(getClient GetClientFn, t translations.TranslationHelperF
 				return mcp.NewToolResultError(err.Error()), nil
 			}
 
+			// Get optional AI model name
+			aiModel, err := OptionalParam[string](request, "ai_model")
+			if err != nil {
+				return mcp.NewToolResultError(err.Error()), nil
+			}
+
 			// json.Marshal encodes byte arrays with base64, which is required for the API.
 			contentBytes := []byte(content)
 
 			// Append AI-generated marker to the commit message
-			messageWithMarker := AppendAIGeneratedMarker(message)
+			messageWithMarker := AppendAIGeneratedMarker(message, aiModel)
 
 			// Create the file options
 			opts := &github.RepositoryContentFileOptions{
@@ -823,6 +838,9 @@ func DeleteFile(getClient GetClientFn, t translations.TranslationHelperFunc) (to
 				mcp.Required(),
 				mcp.Description("Branch to delete the file from"),
 			),
+			mcp.WithString("ai_model",
+				mcp.Description("Optional: AI model name to include in commit metadata (e.g., 'gpt-4', 'claude-3'). Defaults to 'GitHub MCP Server' if not provided."),
+			),
 		),
 		func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 			owner, err := RequiredParam[string](request, "owner")
@@ -846,8 +864,14 @@ func DeleteFile(getClient GetClientFn, t translations.TranslationHelperFunc) (to
 				return mcp.NewToolResultError(err.Error()), nil
 			}
 
+			// Get optional AI model name
+			aiModel, err := OptionalParam[string](request, "ai_model")
+			if err != nil {
+				return mcp.NewToolResultError(err.Error()), nil
+			}
+
 			// Append AI-generated marker to the commit message
-			messageWithMarker := AppendAIGeneratedMarker(message)
+			messageWithMarker := AppendAIGeneratedMarker(message, aiModel)
 
 			client, err := getClient(ctx)
 			if err != nil {
@@ -1116,6 +1140,9 @@ func PushFiles(getClient GetClientFn, t translations.TranslationHelperFunc) (too
 				mcp.Required(),
 				mcp.Description("Commit message"),
 			),
+			mcp.WithString("ai_model",
+				mcp.Description("Optional: AI model name to include in commit metadata (e.g., 'gpt-4', 'claude-3'). Defaults to 'GitHub MCP Server' if not provided."),
+			),
 		),
 		func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 			owner, err := RequiredParam[string](request, "owner")
@@ -1141,8 +1168,14 @@ func PushFiles(getClient GetClientFn, t translations.TranslationHelperFunc) (too
 				return mcp.NewToolResultError("files parameter must be an array of objects with path and content"), nil
 			}
 
+			// Get optional AI model name
+			aiModel, err := OptionalParam[string](request, "ai_model")
+			if err != nil {
+				return mcp.NewToolResultError(err.Error()), nil
+			}
+
 			// Append AI-generated marker to the commit message
-			messageWithMarker := AppendAIGeneratedMarker(message)
+			messageWithMarker := AppendAIGeneratedMarker(message, aiModel)
 
 			client, err := getClient(ctx)
 			if err != nil {
