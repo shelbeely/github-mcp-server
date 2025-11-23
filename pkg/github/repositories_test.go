@@ -1036,7 +1036,7 @@ func Test_CreateOrUpdateFile(t *testing.T) {
 				mock.WithRequestMatchHandler(
 					mock.PutReposContentsByOwnerByRepoByPath,
 					expectRequestBody(t, map[string]interface{}{
-						"message": "Add example file\n\nAI-Assist: yes\nAI-Model: GitHub MCP Server\nReviewed-By: none",
+						"message": "Add example file\n\nAI-Assist: yes\nAI-Model-ID: GitHub MCP Server\nAI-Model-Name: GitHub MCP Server\nReviewed-By: none",
 						"content": "IyBFeGFtcGxlCgpUaGlzIGlzIGFuIGV4YW1wbGUgZmlsZS4=", // Base64 encoded content
 						"branch":  "main",
 					}).andThen(
@@ -1061,7 +1061,7 @@ func Test_CreateOrUpdateFile(t *testing.T) {
 				mock.WithRequestMatchHandler(
 					mock.PutReposContentsByOwnerByRepoByPath,
 					expectRequestBody(t, map[string]interface{}{
-						"message": "Update example file\n\nAI-Assist: yes\nAI-Model: GitHub MCP Server\nReviewed-By: none",
+						"message": "Update example file\n\nAI-Assist: yes\nAI-Model-ID: GitHub MCP Server\nAI-Model-Name: GitHub MCP Server\nReviewed-By: none",
 						"content": "IyBVcGRhdGVkIEV4YW1wbGUKClRoaXMgZmlsZSBoYXMgYmVlbiB1cGRhdGVkLg==", // Base64 encoded content
 						"branch":  "main",
 						"sha":     "abc123def456",
@@ -1422,7 +1422,7 @@ func Test_PushFiles(t *testing.T) {
 				mock.WithRequestMatchHandler(
 					mock.PostReposGitCommitsByOwnerByRepo,
 					expectRequestBody(t, map[string]interface{}{
-						"message": "Update multiple files\n\nAI-Assist: yes\nAI-Model: GitHub MCP Server\nReviewed-By: none",
+						"message": "Update multiple files\n\nAI-Assist: yes\nAI-Model-ID: GitHub MCP Server\nAI-Model-Name: GitHub MCP Server\nReviewed-By: none",
 						"tree":    "ghi789",
 						"parents": []interface{}{"abc123"},
 					}).andThen(
@@ -1859,7 +1859,7 @@ func Test_DeleteFile(t *testing.T) {
 				mock.WithRequestMatchHandler(
 					mock.PostReposGitCommitsByOwnerByRepo,
 					expectRequestBody(t, map[string]interface{}{
-						"message": "Delete example file\n\nAI-Assist: yes\nAI-Model: GitHub MCP Server\nReviewed-By: none",
+						"message": "Delete example file\n\nAI-Assist: yes\nAI-Model-ID: GitHub MCP Server\nAI-Model-Name: GitHub MCP Server\nReviewed-By: none",
 						"tree":    "ghi789",
 						"parents": []interface{}{"abc123"},
 					}).andThen(
@@ -3417,56 +3417,64 @@ func Test_AppendAIGeneratedMarker(t *testing.T) {
 	tests := []struct {
 		name      string
 		message   string
+		modelID   string
 		modelName string
 		expected  string
 	}{
 		{
 			name:      "simple message with default model",
 			message:   "Add new feature",
+			modelID:   "",
 			modelName: "",
-			expected:  "Add new feature\n\nAI-Assist: yes\nAI-Model: GitHub MCP Server\nReviewed-By: none",
+			expected:  "Add new feature\n\nAI-Assist: yes\nAI-Model-ID: GitHub MCP Server\nAI-Model-Name: GitHub MCP Server\nReviewed-By: none",
 		},
 		{
-			name:      "simple message with custom model",
+			name:      "simple message with both ID and name",
 			message:   "Add new feature",
-			modelName: "gpt-4",
-			expected:  "Add new feature\n\nAI-Assist: yes\nAI-Model: gpt-4\nReviewed-By: none",
+			modelID:   "gpt-4",
+			modelName: "GPT-4 Turbo",
+			expected:  "Add new feature\n\nAI-Assist: yes\nAI-Model-ID: gpt-4\nAI-Model-Name: GPT-4 Turbo\nReviewed-By: none",
 		},
 		{
-			name:      "message with trailing newline and custom model",
+			name:      "message with only model ID",
 			message:   "Fix bug\n",
-			modelName: "claude-3-opus",
-			expected:  "Fix bug\n\nAI-Assist: yes\nAI-Model: claude-3-opus\nReviewed-By: none",
+			modelID:   "claude-3-opus",
+			modelName: "",
+			expected:  "Fix bug\n\nAI-Assist: yes\nAI-Model-ID: claude-3-opus\nAI-Model-Name: claude-3-opus\nReviewed-By: none",
 		},
 		{
-			name:      "message with multiple trailing newlines",
+			name:      "message with only model name",
 			message:   "Update docs\n\n",
-			modelName: "",
-			expected:  "Update docs\n\nAI-Assist: yes\nAI-Model: GitHub MCP Server\nReviewed-By: none",
+			modelID:   "",
+			modelName: "GPT-4 Turbo",
+			expected:  "Update docs\n\nAI-Assist: yes\nAI-Model-ID: GPT-4 Turbo\nAI-Model-Name: GPT-4 Turbo\nReviewed-By: none",
 		},
 		{
-			name:      "empty message",
+			name:      "empty message with both ID and name",
 			message:   "",
-			modelName: "",
-			expected:  "\nAI-Assist: yes\nAI-Model: GitHub MCP Server\nReviewed-By: none",
+			modelID:   "gpt-4",
+			modelName: "GPT-4 Turbo",
+			expected:  "\nAI-Assist: yes\nAI-Model-ID: gpt-4\nAI-Model-Name: GPT-4 Turbo\nReviewed-By: none",
 		},
 		{
-			name:      "multiline message with custom model",
+			name:      "multiline message with qwen model",
 			message:   "Add feature\n\nThis adds a new feature with multiple paragraphs.",
-			modelName: "qwen3-72b-instruct",
-			expected:  "Add feature\n\nThis adds a new feature with multiple paragraphs.\n\nAI-Assist: yes\nAI-Model: qwen3-72b-instruct\nReviewed-By: none",
+			modelID:   "qwen3-72b-instruct",
+			modelName: "Qwen 3 72B Instruct",
+			expected:  "Add feature\n\nThis adds a new feature with multiple paragraphs.\n\nAI-Assist: yes\nAI-Model-ID: qwen3-72b-instruct\nAI-Model-Name: Qwen 3 72B Instruct\nReviewed-By: none",
 		},
 		{
 			name:      "message already ending with double newline",
 			message:   "Fix issue\n\n",
+			modelID:   "",
 			modelName: "",
-			expected:  "Fix issue\n\nAI-Assist: yes\nAI-Model: GitHub MCP Server\nReviewed-By: none",
+			expected:  "Fix issue\n\nAI-Assist: yes\nAI-Model-ID: GitHub MCP Server\nAI-Model-Name: GitHub MCP Server\nReviewed-By: none",
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result := AppendAIGeneratedMarker(tt.message, tt.modelName)
+			result := AppendAIGeneratedMarker(tt.message, tt.modelID, tt.modelName)
 			assert.Equal(t, tt.expected, result)
 		})
 	}

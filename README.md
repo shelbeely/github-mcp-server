@@ -996,7 +996,8 @@ Possible options:
   - `repo`: Repository name (string, required)
 
 - **create_or_update_file** - Create or update file
-  - `ai_model`: Optional: AI model name to include in commit metadata (e.g., 'gpt-4', 'claude-3'). Defaults to 'GitHub MCP Server' if not provided. (string, optional)
+  - `ai_model_id`: Optional: AI model ID to include in commit metadata (e.g., 'gpt-4', 'claude-3-opus'). Defaults to 'GitHub MCP Server' if not provided. (string, optional)
+  - `ai_model_name`: Optional: AI model name to include in commit metadata (e.g., 'GPT-4 Turbo', 'Claude 3 Opus'). Defaults to 'GitHub MCP Server' if not provided. (string, optional)
   - `branch`: Branch to create/update the file in (string, required)
   - `content`: Content of the file (string, required)
   - `message`: Commit message (string, required)
@@ -1013,7 +1014,8 @@ Possible options:
   - `private`: Whether repo should be private (boolean, optional)
 
 - **delete_file** - Delete file
-  - `ai_model`: Optional: AI model name to include in commit metadata (e.g., 'gpt-4', 'claude-3'). Defaults to 'GitHub MCP Server' if not provided. (string, optional)
+  - `ai_model_id`: Optional: AI model ID to include in commit metadata (e.g., 'gpt-4', 'claude-3-opus'). Defaults to 'GitHub MCP Server' if not provided. (string, optional)
+  - `ai_model_name`: Optional: AI model name to include in commit metadata (e.g., 'GPT-4 Turbo', 'Claude 3 Opus'). Defaults to 'GitHub MCP Server' if not provided. (string, optional)
   - `branch`: Branch to delete the file from (string, required)
   - `message`: Commit message (string, required)
   - `owner`: Repository owner (username or organization) (string, required)
@@ -1081,7 +1083,8 @@ Possible options:
   - `repo`: Repository name (string, required)
 
 - **push_files** - Push files to repository
-  - `ai_model`: Optional: AI model name to include in commit metadata (e.g., 'gpt-4', 'claude-3'). Defaults to 'GitHub MCP Server' if not provided. (string, optional)
+  - `ai_model_id`: Optional: AI model ID to include in commit metadata (e.g., 'gpt-4', 'claude-3-opus'). Defaults to 'GitHub MCP Server' if not provided. (string, optional)
+  - `ai_model_name`: Optional: AI model name to include in commit metadata (e.g., 'GPT-4 Turbo', 'Claude 3 Opus'). Defaults to 'GitHub MCP Server' if not provided. (string, optional)
   - `branch`: Branch to push to (string, required)
   - `files`: Array of file objects to push, each object with path (string) and content (string) (object[], required)
   - `message`: Commit message (string, required)
