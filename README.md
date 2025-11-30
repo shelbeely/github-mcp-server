@@ -450,6 +450,7 @@ The following sets of tools are available:
 | ----------------------- | ------------------------------------------------------------- |
 | `context`               | **Strongly recommended**: Tools that provide context about the current user and GitHub context you are operating in |
 | `actions` | GitHub Actions workflows and CI/CD operations |
+| `changelog` | Changelog generation tools with prompts to help write and update CHANGELOG.md files |
 | `code_security` | Code security related tools, such as GitHub Code Scanning |
 | `dependabot` | Dependabot tools |
 | `discussions` | GitHub Discussions related tools |

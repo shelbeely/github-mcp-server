@@ -112,6 +112,10 @@ var (
 		ID:          "labels",
 		Description: "GitHub Labels related tools",
 	}
+	ToolsetMetadataChangelog = ToolsetMetadata{
+		ID:          "changelog",
+		Description: "Changelog generation tools with prompts to help write and update CHANGELOG.md files",
+	}
 )
 
 func AvailableTools() []ToolsetMetadata {
@@ -135,6 +139,7 @@ func AvailableTools() []ToolsetMetadata {
 		ToolsetMetadataStargazers,
 		ToolsetMetadataDynamic,
 		ToolsetLabels,
+		ToolsetMetadataChangelog,
 	}
 }
 
@@ -357,6 +362,14 @@ func DefaultToolsetGroup(readOnly bool, getClient GetClientFn, getGQLClient GetG
 			// create or update
 			toolsets.NewServerTool(LabelWrite(getGQLClient, t)),
 		)
+
+	// Changelog toolset - provides prompts to help generate changelogs
+	// Uses existing tools (list_commits, list_pull_requests, list_releases, etc.) to gather changes
+	changelog := toolsets.NewToolset(ToolsetMetadataChangelog.ID, ToolsetMetadataChangelog.Description).
+		AddPrompts(
+			toolsets.NewServerPrompt(GenerateChangelogPrompt(t)),
+		)
+
 	// Add toolsets to the group
 	tsg.AddToolset(contextTools)
 	tsg.AddToolset(repos)
@@ -377,6 +390,7 @@ func DefaultToolsetGroup(readOnly bool, getClient GetClientFn, getGQLClient GetG
 	tsg.AddToolset(projects)
 	tsg.AddToolset(stargazers)
 	tsg.AddToolset(labels)
+	tsg.AddToolset(changelog)
 
 	return tsg
 }
