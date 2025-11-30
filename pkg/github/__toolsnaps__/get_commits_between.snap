@@ -1,0 +1,46 @@
+{
+  "annotations": {
+    "title": "Get commits between refs",
+    "readOnlyHint": true
+  },
+  "description": "Get commits between two git references (tags, branches, or SHAs) for changelog generation. Returns normalized commit data including SHA, message, author, and date.",
+  "inputSchema": {
+    "properties": {
+      "base": {
+        "description": "Base reference (tag, branch, or SHA) - the older commit",
+        "type": "string"
+      },
+      "head": {
+        "description": "Head reference (tag, branch, or SHA) - the newer commit",
+        "type": "string"
+      },
+      "owner": {
+        "description": "Repository owner",
+        "type": "string"
+      },
+      "page": {
+        "description": "Page number for pagination (min 1)",
+        "minimum": 1,
+        "type": "number"
+      },
+      "perPage": {
+        "description": "Results per page for pagination (min 1, max 100)",
+        "maximum": 100,
+        "minimum": 1,
+        "type": "number"
+      },
+      "repo": {
+        "description": "Repository name",
+        "type": "string"
+      }
+    },
+    "required": [
+      "owner",
+      "repo",
+      "base",
+      "head"
+    ],
+    "type": "object"
+  },
+  "name": "get_commits_between"
+}

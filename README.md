@@ -450,6 +450,7 @@ The following sets of tools are available:
 | ----------------------- | ------------------------------------------------------------- |
 | `context`               | **Strongly recommended**: Tools that provide context about the current user and GitHub context you are operating in |
 | `actions` | GitHub Actions workflows and CI/CD operations |
+| `changelog` | Changelog generation tools for fetching commits between tags/releases and generating changelog content |
 | `code_security` | Code security related tools, such as GitHub Code Scanning |
 | `dependabot` | Dependabot tools |
 | `discussions` | GitHub Discussions related tools |
@@ -571,6 +572,20 @@ The following sets of tools are available:
   - `ref`: The git reference for the workflow. The reference can be a branch or tag name. (string, required)
   - `repo`: Repository name (string, required)
   - `workflow_id`: The workflow ID (numeric) or workflow file name (e.g., main.yml, ci.yaml) (string, required)
+
+</details>
+
+<details>
+
+<summary>Changelog</summary>
+
+- **get_commits_between** - Get commits between refs
+  - `base`: Base reference (tag, branch, or SHA) - the older commit (string, required)
+  - `head`: Head reference (tag, branch, or SHA) - the newer commit (string, required)
+  - `owner`: Repository owner (string, required)
+  - `page`: Page number for pagination (min 1) (number, optional)
+  - `perPage`: Results per page for pagination (min 1, max 100) (number, optional)
+  - `repo`: Repository name (string, required)
 
 </details>
 
