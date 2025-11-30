@@ -2,6 +2,7 @@ package github
 
 import (
 	"context"
+	"strings"
 	"testing"
 
 	"github.com/github/github-mcp-server/pkg/translations"
@@ -73,10 +74,10 @@ func TestGenerateChangelogPrompt(t *testing.T) {
 		for _, msg := range result.Messages {
 			content, ok := msg.Content.(mcp.TextContent)
 			if ok {
-				if contains(content.Text, "Keep a Changelog") {
+				if strings.Contains(content.Text, "Keep a Changelog") {
 					hasKeepChangelogReference = true
 				}
-				if contains(content.Text, "list_commits") || contains(content.Text, "list_releases") {
+				if strings.Contains(content.Text, "list_commits") || strings.Contains(content.Text, "list_releases") {
 					hasToolReferences = true
 				}
 			}
@@ -108,7 +109,7 @@ func TestGenerateChangelogPrompt(t *testing.T) {
 		for _, msg := range result.Messages {
 			content, ok := msg.Content.(mcp.TextContent)
 			if ok {
-				if contains(content.Text, "v1.0.0") && contains(content.Text, "v1.1.0") {
+				if strings.Contains(content.Text, "v1.0.0") && strings.Contains(content.Text, "v1.1.0") {
 					hasVersionInfo = true
 					break
 				}
@@ -116,17 +117,4 @@ func TestGenerateChangelogPrompt(t *testing.T) {
 		}
 		assert.True(t, hasVersionInfo, "prompt should include version information when provided")
 	})
-}
-
-func contains(s, substr string) bool {
-	return len(s) >= len(substr) && (s == substr || len(substr) == 0 || (len(s) > 0 && len(substr) > 0 && containsHelper(s, substr)))
-}
-
-func containsHelper(s, substr string) bool {
-	for i := 0; i <= len(s)-len(substr); i++ {
-		if s[i:i+len(substr)] == substr {
-			return true
-		}
-	}
-	return false
 }
