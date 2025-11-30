@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+	"strings"
 	"testing"
 	"time"
 
@@ -378,22 +379,9 @@ func Test_GenerateChangelogPrompt(t *testing.T) {
 
 func containsAll(s string, substrings []string) bool {
 	for _, sub := range substrings {
-		if !containsString(s, sub) {
+		if !strings.Contains(s, sub) {
 			return false
 		}
 	}
 	return true
-}
-
-func containsString(s, sub string) bool {
-	return len(s) >= len(sub) && (s == sub || len(s) > 0 && containsSubstring(s, sub))
-}
-
-func containsSubstring(s, sub string) bool {
-	for i := 0; i <= len(s)-len(sub); i++ {
-		if s[i:i+len(sub)] == sub {
-			return true
-		}
-	}
-	return false
 }
